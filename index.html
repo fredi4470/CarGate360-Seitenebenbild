@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fahrzeug bearbeiten</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #8a8a8a;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 12px;
+    color: #222;
+    padding: 20px 0;
+  }
+
+  /* ---------- Dialog-Rahmen ---------- */
+  .dialog {
+    width: 956px;
+    margin: 0 auto;
+    background: #ececec;
+    border: 1px solid #555;
+    box-shadow: 0 4px 18px rgba(0,0,0,.45);
+  }
+  .titlebar {
+    height: 24px;
+    background: linear-gradient(#4a4a4a, #2b2b2b);
+    color: #fff;
+    font-weight: bold;
+    font-size: 13px;
+    line-height: 24px;
+    padding: 0 10px;
+    position: relative;
+    white-space: nowrap;
+  }
+  .titlebar .close {
+    position: absolute; right: 8px; top: 0;
+    cursor: pointer; font-size: 15px;
+  }
+  .titlebar .close:hover { color: #f66; }
+
+  .tabs {
+    background: linear-gradient(#3a3a3a, #2a2a2a);
+    height: 37px;
+    padding: 8px 0 0 0;
+    display: flex;
+    gap: 1px;
+  }
+  .tab {
+    height: 29px;
+    padding: 0 3px;
+    background: linear-gradient(#fafafa, #dedede);
+    border: 1px solid #999;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+    font-size: 12.5px;
+    font-weight: bold;
+    color: #222;
+    line-height: 28px;
+    cursor: pointer;
+    font-family: inherit;
+    user-select: none;
+  }
+  .tab:hover { background: linear-gradient(#fff, #e8e8e8); }
+  .tab.active { background: #fff; color: #a3141b; }
+
+  .page { display: none; min-height: 690px; }
+  .page.active { display: block; }
+
+  /* ---------- Allgemeine Formularelemente ---------- */
+  select, input[type=text] {
+    font-family: inherit;
+    font-size: 12px;
+    height: 20px;
+    border: 1px solid #a9a9a9;
+    border-radius: 2px;
+    background: #fff;
+    color: #222;
+    padding: 0 3px;
+    vertical-align: middle;
+  }
+  select { padding: 0 1px; cursor: pointer; }
+  input[type=text]:focus, select:focus { outline: 1px solid #5b9dd9; }
+  input[type=text][readonly] { background: #e6e6e6; }
+  input[type=checkbox] { margin: 0 3px 0 0; width: 13px; height: 13px; vertical-align: middle; cursor: pointer; }
+  .req { color: #c00; }
+  .info {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    font: bold 9px/12px Georgia, serif;
+    text-align: center;
+    vertical-align: middle;
+    cursor: help;
+    margin-left: 3px;
+  }
+  .btn {
+    font-family: inherit;
+    font-size: 13px;
+    background: linear-gradient(#fff, #f2f2f2);
+    border: 1px solid #b5b5b5;
+    border-radius: 3px;
+    padding: 0 10px;
+    height: 30px;
+    cursor: pointer;
+    color: #222;
+  }
+  .btn:hover { background: linear-gradient(#fff, #e6e6e6); border-color: #888; }
+  .btn:active { background: #ddd; }
+  .btn.small { height: 21px; font-size: 12px; padding: 0 7px; font-weight: bold; }
+  .w46 { width: 46px; } .w52 { width: 52px; } .w101 { width: 101px; }
+  .w125 { width: 125px; } .w138 { width: 138px; } .w150 { width: 150px; }
+  .w152 { width: 152px; } .w202 { width: 202px; } .w186 { width: 186px; }
+
+  /* ---------- Basis ---------- */
+  .basis { padding: 10px 15px 0 15px; }
+  .top { position: relative; height: 106px; }
+  .top .lbl { font-size: 12.5px; }
+  .abs { position: absolute; }
+  .filiale { font-size: 12.5px; color: #333; line-height: 16px; }
+  .small { font-size: 10px; }
+  .dots { position: absolute; top: 46px; height: 42px; border-left: 1px dotted; pointer-events: none; }
+  .headline-count.over { color: #c00; font-weight: bold; }
+
+  .bar {
+    margin-top: 6px;
+    height: 20px;
+    background: linear-gradient(#5b5b5b, #303030);
+    border-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12.5px;
+    line-height: 20px;
+    padding: 0 8px 0 4px;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+  .bar .plus { position: absolute; right: 6px; top: 0; font-size: 14px; }
+  .bar-body { display: none; background: #f7f7f7; border: 1px solid #c6c6c6; border-top: none; padding: 8px 10px; font-size: 12px; }
+  .bar-body.open { display: block; }
+  .bar-body table { border-collapse: collapse; }
+  .bar-body td { padding: 2px 10px 2px 0; }
+  hr.sep { border: none; border-top: 1px solid #333; margin: 6px 0 10px 0; }
+
+  .cols { display: flex; }
+  .col { width: 463px; }
+  .row { height: 25.6px; display: flex; align-items: center; }
+  .row > .l { width: 203px; flex: none; font-size: 12.5px; white-space: nowrap; }
+  .row > .f { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .row label.cb { display: inline-flex; align-items: center; font-size: 12.5px; }
+  .legend { text-align: right; font-size: 12.5px; margin: 4px 0 8px; }
+  .legend .req { margin-left: 10px; }
+  .cal {
+    width: 17px; height: 16px; border: 1px solid #6a87b8; background: linear-gradient(#fff, #cfdcf2);
+    font: bold 9px/14px Arial; color: #1a3d7a; text-align: center; cursor: pointer; position: relative; margin-left: 2px;
+  }
+  .cal input { position: absolute; opacity: 0; width: 1px; height: 1px; left: 0; top: 0; pointer-events: none; }
+
+  .footer {
+    border-top: 1px solid #d5d5d5;
+    margin-top: 40px;
+    padding: 12px 15px 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .footer .btn { height: 32px; }
+
+  /* ---------- Ausstattungen ---------- */
+  .ausst { padding: 10px 6px 10px 6px; }
+  .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .toolbar .btn { height: 30px; padding: 0 16px; }
+  .toolbar .btn.green, .toolbar .btn.on {
+    background: linear-gradient(#2c9a2c, #127212); color: #fff; border-color: #0e5e0e;
+  }
+  .toolbar .count { font-size: 12.5px; margin-left: 2px; }
+  .ausst-cols { display: flex; gap: 14px; align-items: flex-start; }
+  .equip-left { width: 450px; flex: none; }
+  fieldset.grp {
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    margin: 0 0 6px 0;
+    padding: 4px 8px 8px 8px;
+  }
+  fieldset.grp legend { font-size: 12.5px; padding: 0 2px; margin-left: -4px; }
+  .eqwrap { display: flex; flex-wrap: wrap; gap: 3px 2px; width: 426px; }
+  .eq {
+    position: relative;
+    height: 29px;
+    border: 1px solid #c9c9c9;
+    border-radius: 3px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: #222;
+    cursor: pointer;
+    padding: 0 6px 0 24px;
+    text-align: center;
+    user-select: none;
+    transition: background .12s;
+  }
+  .eq:hover { border-color: #888; }
+  .eq.sel {
+    background: linear-gradient(#2a9b2a, #137713);
+    border-color: #0f650f;
+    color: #fff;
+    font-weight: bold;
+  }
+  .eq.sel:hover { background: linear-gradient(#33aa33, #188418); }
+  .eq .q { position: absolute; left: 4px; top: 0; line-height: 27px; font-weight: bold; display: none; }
+  .eq.sel.qp .q { display: inline; }
+  .eq.hidden { display: none; }
+  .ew1 { width: 140px; } .ew2 { width: 210px; } .ew2b { width: 212px; } .ew3 { width: 282px; } .ew4 { width: 424px; }
+
+  .cbmode .eq {
+    background: none !important; border: none; color: #222 !important; font-weight: normal !important;
+    text-align: left; padding-left: 20px; height: 22px;
+  }
+  .cbmode .eq::before {
+    content: ""; position: absolute; left: 3px; top: 4px; width: 12px; height: 12px;
+    border: 1px solid #777; background: #fff; border-radius: 2px;
+  }
+  .cbmode .eq.sel::before { content: "✓"; font-size: 11px; line-height: 12px; text-align: center; color: #fff; background: #1a7f1a; border-color: #1a7f1a; }
+  .cbmode .eq .q { display: none !important; }
+
+  .dat {
+    flex: 1;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    padding: 4px 4px 4px 6px;
+    height: 640px;
+    overflow-y: auto;
+    position: relative;
+  }
+  .dat .cap { font-size: 12.5px; color: #333; margin: -12px 0 4px 2px; background: #ececec; display: inline-block; padding: 0 3px; position: sticky; top: 0; }
+  .dat table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+  .dat th { text-align: left; font-weight: bold; padding: 1px 2px; white-space: nowrap; }
+  .dat th.r, .dat td.r { text-align: right; }
+  .dat td { padding: 0 2px; line-height: 14px; vertical-align: top; cursor: pointer; }
+  .dat tbody tr:nth-child(odd) td { background: #d9d9d9; }
+  .dat tbody tr:nth-child(even) td { background: #fff; }
+  .dat tbody tr:hover td { background: #cfe3f7; }
+  .dat td.g { color: #129012; }
+  .dat tr.sum td { font-weight: normal; border-top: 1px solid #999; background: #fff !important; cursor: default; }
+
+  /* ---------- Verbrauch ---------- */
+  .verb { padding: 12px 12px 10px 12px; font-size: 12.5px; }
+  .verb h2 { font-size: 16px; font-weight: normal; margin: 4px 0 18px; color: #333; }
+  .verb h3 { font-size: 14.5px; font-weight: bold; margin: 6px 0 6px; color: #333; }
+  .verb .note { font-size: 11.5px; font-weight: bold; margin: 0 0 4px; }
+  .vr { display: flex; align-items: center; height: 25.6px; }
+  .vr .l { width: 203px; flex: none; }
+  .vr input.n { width: 46px; }
+  .vr .u { margin-left: 3px; }
+  .vgrid { display: flex; }
+  .vgrid > div { width: 463px; }
+  .calc-btn {
+    background: #2ea446;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 15px;
+    margin-left: 6px;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  .calc-btn:hover { background: #249038; }
+  .calc-btn.flash { background: #fff; color: #2ea446; box-shadow: inset 0 0 0 2px #2ea446; }
+  .costs { display: flex; margin-top: 12px; }
+  .costs .c1 { width: 465px; }
+  .costs .c2 { flex: 1; }
+  .costs h4 { font-size: 13px; margin: 0 0 4px; font-weight: bold; color: #333; }
+  .cr { display: flex; align-items: center; height: 23px; }
+  .cr .l { width: 375px; flex: none; }
+  .costs .c2 .l { width: 367px; }
+  .cr input { width: 70px; }
+
+  /* ---------- Platzhalter-Tabs ---------- */
+  .simple { padding: 14px 15px; }
+  .simple h2 { font-size: 15px; font-weight: normal; margin: 4px 0 14px; }
+  .simple textarea { width: 100%; height: 220px; font-family: inherit; font-size: 12px; border: 1px solid #a9a9a9; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
+    background: #2b2b2b; color: #fff; padding: 9px 18px; border-radius: 4px; font-size: 13px;
+    opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  .toast.show { opacity: .95; }
+</style>
+</head>
+<body>
+
+<div class="dialog">
+  <div class="titlebar">Fahrzeug bearbeiten: <span id="titleText">Kia K4 GT-Line 1.6T DCT NAVI,KAMERA,ACC,LED,SITZHZG</span><span class="close" title="Schließen">✖</span></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="basis">Basis</button>
+    <button class="tab" data-tab="preise">Preise &amp; Beschreibung</button>
+    <button class="tab" data-tab="ausst">Ausstattungen</button>
+    <button class="tab" data-tab="zusatz">Zusatzinfos</button>
+    <button class="tab" data-tab="verbrauch">Verbrauch</button>
+    <button class="tab" data-tab="fin">Finanzierung</button>
+    <button class="tab" data-tab="ueber">Übersicht</button>
+    <button class="tab" data-tab="boersen">Börsen</button>
+  </div>
+
+  <!-- ===================== BASIS ===================== -->
+  <div class="page active" id="tab-basis">
+    <div class="basis">
+      <div class="top">
+        <div class="abs lbl" style="left:0;top:0">Hersteller <span class="req">*</span></div>
+        <select class="abs" style="left:0;top:16px;width:250px" data-opts="Audi|BMW|Citroen|Cupra|Dacia|Fiat|Ford|Hyundai|Kia|Mazda|Mercedes-Benz|MG|Nissan|Opel|Peugeot|Renault|Seat|Skoda|Tesla|Toyota|Volkswagen|Volvo" data-val="Kia"></select>
+
+        <div class="abs lbl" style="left:277px;top:0">Modell <span class="req">*</span></div>
+        <select class="abs" style="left:277px;top:16px;width:250px" data-opts="Ceed|EV3|EV6|EV9|K4|Niro|Picanto|ProCeed|Rio|Sorento|Sportage|Stonic|XCeed" data-val="K4"></select>
+
+        <div class="abs filiale" style="left:632px;top:0">Filiale<br>Autohaus Dresen - Neuss Moselstr. 9, Neuss (710)</div>
+
+        <div class="abs lbl" style="left:0;top:37px">Modellzusatz <span class="small">(Kopfzeile: <span class="headline-count" id="hlCount">51</span> Zeichen)</span><span class="info" title="Mobile: max. 48 Zeichen, AutoScout24: pixelbasiert, Carzilla: max. 65 Zeichen">i</span></div>
+        <input type="text" id="modellzusatz" class="abs" style="left:0;top:60px;width:605px" value="GT-Line 1.6T DCT NAVI,KAMERA,ACC,LED,SITZHZG">
+        <div class="dots" style="left:305px;border-color:#f08a24"></div>
+        <div class="dots" style="left:373px;border-color:#b0202a"></div>
+        <div class="dots" style="left:412px;border-color:#3048b8"></div>
+        <button class="btn abs" id="genBtn" style="left:610px;top:55px;height:31px;font-weight:bold;font-size:12.5px">↶&nbsp; Generieren</button>
+
+        <div class="abs lbl" style="left:738px;top:38px">Ansprechpartner <span class="req">*</span></div>
+        <select class="abs" style="left:738px;top:54px;width:187px" data-opts="Ihr Verkaufsteam|Max Mustermann|Erika Musterfrau|Jonas Beispiel|Lea Exempel" data-val="Ihr Verkaufsteam"></select>
+      </div>
+
+      <div class="bar" data-target="kopfBody">Kopfzeilen-Tool (Max-Länge Mobile: 48 Zeichen, AS24: Pixelbasiert, Carzilla: 65 Zeichen)<span class="plus">+</span></div>
+      <div class="bar-body" id="kopfBody">
+        <table>
+          <tr><td>mobile.de:</td><td id="pvMobile"></td></tr>
+          <tr><td>AutoScout24:</td><td id="pvAs24"></td></tr>
+          <tr><td>Carzilla:</td><td id="pvCarzilla"></td></tr>
+        </table>
+      </div>
+      <hr class="sep">
+
+      <div class="cols">
+        <div class="col">
+          <div class="row"><div class="l">Fahrzeugklasse <span class="req">*</span></div><div class="f"><select class="w101" data-opts="PKW|Motorrad|Wohnmobil|Transporter|LKW|Anhänger" data-val="PKW"></select><label class="cb"><input type="checkbox">Nutzfahrzeug</label></div></div>
+          <div class="row"><div class="l">Karosserie <span class="req">*</span></div><div class="f"><select class="w202" data-opts="Cabrio/Roadster|Coupé|Kleinwagen|Kombi|Limousine|SUV/Geländewagen|Sportwagen|Van/Kleinbus|Andere" data-val="Limousine"></select></div></div>
+          <div class="row"><div class="l">Fahrzeugart <span class="req">*</span>/Landesversion</div><div class="f"><select class="w152" data-opts="Neufahrzeug|Gebrauchtfahrzeug|Jahreswagen|Vorführfahrzeug|Tageszulassung|Oldtimer" data-val="Neufahrzeug"></select><select class="w46" data-opts="de|at|ch|fr|it|nl|be|eu" data-val="de"></select></div></div>
+          <div class="row"><div class="l">FahrgstlNr. <span class="req">*</span></div><div class="f"><input type="text" class="w202" value="3KPFU51C6TE386214"></div></div>
+          <div class="row"><div class="l">DAT-Datenabfrage</div><div class="f"><button class="btn small" id="qAssist">Q+ Assistent</button><span class="info" title="Fahrzeugdaten per FIN über DAT abrufen">i</span></div></div>
+          <div class="row"><div class="l">Aussenfarbe <span class="req">*</span></div><div class="f"><select class="w101" data-opts="Beige|Blau|Braun|Bronze|Gelb|Gold|Grau|Grün|Orange|Rot|Schwarz|Silber|Violett|Weiß" data-val="Grau"></select><label class="cb"><input type="checkbox" checked>Metallic</label></div></div>
+          <div class="row"><div class="l">Herstellerfarbe/-farbcode <span class="req">+</span></div><div class="f"><input type="text" class="w150" value="Stahlgrau"><input type="text" class="w46" value=""></div></div>
+          <div class="row"><div class="l">Hubraum</div><div class="f"><input type="text" class="w101" value="1.598"> ccm</div></div>
+          <div class="row"><div class="l">Leistung <span class="req">*</span></div><div class="f"><input type="text" class="w101" value="132"> kW</div></div>
+          <div class="row"><div class="l">Zylinder</div><div class="f"><select class="w46" data-opts="range:0-16" data-val="4"></select></div></div>
+          <div class="row"><div class="l">Motorart <span class="req">*</span></div><div class="f"><select class="w101" data-opts="Benzin|Diesel|Elektro|Hybrid (Benzin/Elektro)|Hybrid (Diesel/Elektro)|Plug-in-Hybrid|Autogas (LPG)|Erdgas (CNG)|Wasserstoff" data-val="Benzin"></select></div></div>
+          <div class="row"><div class="l">Antriebsart/Felgencode</div><div class="f"><select class="w138" data-opts="Frontantrieb|Heckantrieb|Allradantrieb" data-val="Frontantrieb"></select><span class="info" title="Antriebsart laut Hersteller">i</span><input type="text" class="w46"></div></div>
+          <div class="row"><div class="l">Getriebe <span class="req">*</span></div><div class="f"><select class="w101" data-opts="Schaltgetriebe|Automatik|Halbautomatik" data-val="Automatik"></select></div></div>
+          <div class="row"><div class="l">Gänge</div><div class="f"><select class="w46" data-opts="range:1-10" data-val="7"></select></div></div>
+          <div class="row"><div class="l">Polsterung</div><div class="f"><select class="w101" data-opts="Alcantara|Stoff|Teilleder|Vollleder|Velours|Kunstleder|Andere" data-val="Stoff"></select></div></div>
+          <div class="row"><div class="l">Innenfarbe/-ausstattungscode <span class="req">+</span></div><div class="f"><select class="w150" data-opts="Beige|Blau|Braun|Grau|Rot|Schwarz|Weiß|Andere" data-val="Schwarz"></select><input type="text" class="w46" value="SAAA11"></div></div>
+          <div class="row"><div class="l">Herstellerinnenausstattung <span class="req">+</span></div><div class="f"><input type="text" class="w202" value="ARTIFICIAL LEATHER(ONE TONE)"></div></div>
+          <div class="row"><div class="l">Video-URL</div><div class="f"><input type="text" class="w202"><span class="info" title="Link zu einem YouTube-Video des Fahrzeugs">i</span></div></div>
+        </div>
+
+        <div class="col" style="margin-left:0">
+          <div class="row"><div class="l">HSN/TSN/Baureihe <span class="req">+</span></div><div class="f"><input type="text" class="w52" value="2513"><input type="text" class="w46" value="AAC"><input type="text" class="w125" value="K4"></div></div>
+          <div class="row"><div class="l">dat-ECode <span class="req">+</span></div><div class="f"><input type="text" class="w202" value="014251401440001"><span class="info" title="DAT-Europa-Code">i</span></div></div>
+          <div class="row"><div class="l">Erstzulassung</div><div class="f"><input type="text" class="w101" id="ez"><span class="cal" id="calBtn" title="Datum wählen">31<input type="date" id="ezPicker" tabindex="-1"></span></div></div>
+          <div class="row"><div class="l">km-Stand</div><div class="f"><input type="text" class="w101" value="5"></div></div>
+          <div class="row"><div class="l">Nächste HU (Monat/Jahr)</div><div class="f"><select class="w101" data-opts="months" data-empty="Bitte wählen"></select><select class="w101" data-opts="range:2026-2030" data-empty="Bitte wählen"></select></div></div>
+          <div class="row"><div class="l">Bau-Monat/Jahr</div><div class="f"><select class="w101" data-opts="months" data-empty="Bitte wählen" data-val="Juli"></select><select class="w101" data-opts="range:2015-2027" data-empty="Bitte wählen" data-val="2026"></select></div></div>
+          <div class="row"><div class="l">Qualitätssiegel</div><div class="f"><select class="w202" data-empty="Bitte wählen" data-opts="Kia Gebrauchtwagen-Garantie|DEKRA-Siegel|TÜV-Siegel|GTÜ-Siegel|Händlersiegel"></select></div></div>
+          <div class="row"><div class="l">Anzahl Türen/Sitze</div><div class="f"><select class="w46" data-opts="range:2-7" data-val="5"></select><select class="w46" data-opts="range:1-9" data-val="5"></select></div></div>
+          <div class="row"><div class="l">Vorbesitzer</div><div class="f"><select class="w46" data-opts="range:0-9" data-val="0"></select></div></div>
+          <div class="row"><div class="l">Garantiedauer</div><div class="f"><select class="w101" data-empty="Bitte wählen" data-opts="12 Monate|24 Monate|36 Monate|48 Monate|60 Monate|72 Monate|84 Monate" data-val="84 Monate"></select><span class="info" title="Herstellergarantie in Monaten">i</span></div></div>
+          <div class="row"><div class="l">Erweiterte Garantiedauer</div><div class="f"><select class="w101" data-empty="Bitte wählen" data-opts="12 Monate|24 Monate|36 Monate|48 Monate"></select></div></div>
+          <div class="row"><div class="l">Vorverwendung</div><div class="f"><select class="w202" data-empty="Bitte wählen" data-opts="Keine|Mietwagen|Taxi|Fahrschule|Behördenfahrzeug|Firmenwagen"></select></div></div>
+          <div class="row"><div class="l">Online (Börsen)</div><div class="f"><input type="checkbox"><span class="info" style="margin-left:-2px" title="Fahrzeug an Börsen übertragen">i</span><span style="margin-left:14px;font-size:12.5px">mobile.de Reservierung</span><input type="checkbox" style="margin-left:6px"></div></div>
+          <div class="row"><div class="l">Händlerfahrzeug (B2B)</div><div class="f"><input type="checkbox"><span class="info" style="margin-left:-2px" title="Nur für Händler sichtbar">i</span></div></div>
+          <div class="row"><div class="l">Abgleichsperre</div><div class="f"><input type="checkbox"></div></div>
+          <div class="row"><div class="l">Dauersperre</div><div class="f"><input type="checkbox"></div></div>
+          <div class="row"><div class="l">Kennnummer <span class="req">*</span></div><div class="f"><input type="text" class="w202" value="8003719"></div></div>
+          <div class="row"><div class="l">Interne Nummer</div><div class="f"><input type="text" class="w202"></div></div>
+        </div>
+      </div>
+
+      <div class="legend"><span class="req">+</span> Interne Felder <span class="req">*</span> Pflichtfelder</div>
+
+      <div class="bar" data-target="techBody">Technische Informationen<span class="plus">+</span></div>
+      <div class="bar-body" id="techBody">
+        <table>
+          <tr><td>Leergewicht</td><td><input type="text" class="w101" value="1.390"> kg</td><td style="padding-left:30px">Zul. Gesamtgewicht</td><td><input type="text" class="w101" value="1.870"> kg</td></tr>
+          <tr><td>Tankvolumen</td><td><input type="text" class="w101" value="50"> l</td><td style="padding-left:30px">Schadstoffklasse</td><td><select class="w101" data-opts="Euro4|Euro5|Euro6|Euro6d|Euro6e" data-val="Euro6e"></select></td></tr>
+          <tr><td>Anhängelast gebr.</td><td><input type="text" class="w101" value="1.200"> kg</td><td style="padding-left:30px">Anhängelast ungebr.</td><td><input type="text" class="w101" value="600"> kg</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PREISE ===================== -->
+  <div class="page" id="tab-preise">
+    <div class="simple">
+      <h2>Preise &amp; Beschreibung</h2>
+      <div class="vr"><div class="l">Verkaufspreis (brutto) <span class="req">*</span></div><input type="text" class="w101" value="32.990"> €</div>
+      <div class="vr"><div class="l">Händlerpreis (netto)</div><input type="text" class="w101" value="26.890"> €</div>
+      <div class="vr"><div class="l">MwSt. ausweisbar</div><input type="checkbox" checked></div>
+      <div class="vr"><div class="l">Preis verhandelbar</div><input type="checkbox"></div>
+      <div class="vr" style="margin-bottom:8px"><div class="l">Beschreibung</div></div>
+      <textarea>Kia K4 GT-Line 1.6T DCT – Navigationssystem, 360°-Kamera, Abstandsregeltempomat, LED-Scheinwerfer, Sitzheizung vorn und hinten, Head-up-Display, Harman-Kardon-Soundsystem.</textarea>
+    </div>
+  </div>
+
+  <!-- ===================== AUSSTATTUNGEN ===================== -->
+  <div class="page" id="tab-ausst">
+    <div class="ausst">
+      <div class="toolbar">
+        <button class="btn" id="selAll">Alle anwählen</button>
+        <button class="btn" id="selNone">Alle abwählen</button>
+        <button class="btn green" id="qualityBtn">Quality+</button>
+        <button class="btn" id="boersenBtn">Nur "Börsenrelevante"</button>
+        <button class="btn" id="cbBtn">Kontrollkästchen</button>
+        <span class="count"><span id="selCount">0</span> von <span id="totCount">0</span> gewählt</span>
+      </div>
+      <div class="ausst-cols">
+        <div class="equip-left" id="equipLeft"></div>
+        <div class="dat">
+          <div class="cap">Ausstattung lt. DAT</div>
+          <table>
+            <thead><tr><th>Name Sonderausstattung</th><th>Code</th><th class="r">Nettopreis</th></tr></thead>
+            <tbody id="datSonder"></tbody>
+          </table>
+          <table>
+            <thead><tr><th>Name Serienausstattung</th><th class="r">Code</th></tr></thead>
+            <tbody id="datSerie"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ZUSATZINFOS ===================== -->
+  <div class="page" id="tab-zusatz">
+    <div class="simple">
+      <h2>Zusatzinfos</h2>
+      <div class="vr"><div class="l">Nichtraucherfahrzeug</div><input type="checkbox" checked></div>
+      <div class="vr"><div class="l">Scheckheftgepflegt</div><input type="checkbox"></div>
+      <div class="vr"><div class="l">Unfallfrei</div><input type="checkbox" checked></div>
+      <div class="vr"><div class="l">Lieferzeit</div><select class="w101" data-opts="sofort|1 Woche|2 Wochen|4 Wochen|8 Wochen" data-val="sofort"></select></div>
+      <div class="vr"><div class="l">Standort</div><select class="w202" data-opts="Neuss Moselstr. 9|Düsseldorf|Köln|Mönchengladbach" data-val="Neuss Moselstr. 9"></select></div>
+    </div>
+  </div>
+
+  <!-- ===================== VERBRAUCH ===================== -->
+  <div class="page" id="tab-verbrauch">
+    <div class="verb">
+      <h2>Emissions- &amp; Verbrauchswerte nach WLTP</h2>
+      <p class="note">Die einzutragenden Daten sind aus der EG-Übereinstimmungsbescheinigung / CoC (Certificate of Conformity) unter Nummer 49.1 zu entnehmen.</p>
+      <h3>Kraftstoffverbrauch</h3>
+      <div class="vr"><div class="l">Innenstadt</div><input type="text" class="n" value="9"><span class="u">l/100 km</span></div>
+      <div class="vr"><div class="l">Stadtrand</div><input type="text" class="n" value="6,9"><span class="u">l/100 km</span></div>
+      <div class="vr"><div class="l">Landstraße</div><input type="text" class="n" value="5,9"><span class="u">l/100 km</span></div>
+      <div class="vr"><div class="l">Autobahn</div><input type="text" class="n" value="6,9"><span class="u">l/100 km</span></div>
+      <div class="vr"><div class="l">kombiniert <span class="req">*</span></div><input type="text" class="n" id="vKomb" value="6,9"><span class="u">l/100 km</span></div>
+      <div class="vgrid" style="margin-top:4px">
+        <div class="vr"><div class="l">Abgasnorm</div><select class="w101" data-opts="Euro1|Euro2|Euro3|Euro4|Euro5|Euro6|Euro6c|Euro6d-TEMP|Euro6d|Euro6e" data-val="Euro6e"></select></div>
+        <div class="vr"><div class="l">Umweltplakette</div><select class="w101" data-opts="Keine|Rot|Gelb|Grün" data-val="Grün"></select></div>
+      </div>
+      <h3 style="margin-top:8px">CO2-Emissionen</h3>
+      <div class="vr"><div class="l">kombiniert <span class="req">*</span></div><input type="text" class="n" id="vCo2" value="155" style="border-color:#555"><span class="u">g/km</span></div>
+      <div class="vr"><div class="l">CO2-Klasse <span class="req">*</span></div><select class="w101" id="vCo2Klasse" data-opts="A|B|C|D|E|F|G" data-val="E"></select></div>
+
+      <h3 style="margin-top:18px">CO2-Kosten, Energiekosten, KFZ-Steuer <button class="calc-btn" id="calcBtn">per Klick berechnen!</button></h3>
+      <p class="note" style="margin-top:12px">Achtung! Eine Änderung der Verbrauchs- oder Emissionsdaten erfordert eine Neuberechnung der Kosten- &amp; Steuerangaben!</p>
+      <div class="vr" style="margin-top:4px"><div class="l" style="width:330px">Energieträger (primär) <span class="req">*</span></div><select style="width:113px" id="vEnergie" data-opts="Super E5|Super E10|Super Plus|Diesel|Strom|Autogas (LPG)|Erdgas (CNG)|Wasserstoff" data-val="Super E5"></select></div>
+
+      <div class="costs">
+        <div class="c1">
+          <h4>Energiekosten, KFZ-Steuer</h4>
+          <div class="cr"><div class="l">Kraftstoffpreis pro Einheit</div><input type="text" id="vPreis" value="1,744" readonly> €</div>
+          <div class="cr"><div class="l">Energiekosten bei 15.000km Jahresfahrleistung</div><input type="text" id="vEK" value="1805,04"> €</div>
+          <div class="cr"><div class="l">Jahressteuer</div><input type="text" id="vSteuer" value="166"> €</div>
+        </div>
+        <div class="c2">
+          <h4>Mögliche CO2-Kosten über die nächsten 10 Jahre (15.000km/Jahr)</h4>
+          <div class="cr"><div class="l">bei mitteren durchschnittlichen CO2-Preis von 142,5 €/t</div><input type="text" id="vC1" value="3313,13"> €</div>
+          <div class="cr"><div class="l">bei niedrigen durchschnittlichen CO2-Preis von 60 €/t</div><input type="text" id="vC2" value="1395"> €</div>
+          <div class="cr"><div class="l">bei hohen durchschnittlichen CO2-Preis von 220 €/t</div><input type="text" id="vC3" value="5115"> €</div>
+          <div style="text-align:right;margin-top:6px;padding-right:2px"><span class="req">*</span> Pflichtfelder</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FINANZIERUNG ===================== -->
+  <div class="page" id="tab-fin">
+    <div class="simple">
+      <h2>Finanzierung</h2>
+      <div class="vr"><div class="l">Finanzierungsart</div><select class="w152" data-empty="Bitte wählen" data-opts="Finanzierung|Leasing|3-Wege-Finanzierung"></select></div>
+      <div class="vr"><div class="l">Laufzeit</div><select class="w101" data-opts="12 Monate|24 Monate|36 Monate|48 Monate|60 Monate" data-val="48 Monate"></select></div>
+      <div class="vr"><div class="l">Anzahlung</div><input type="text" class="w101" value="3.000"> €</div>
+      <div class="vr"><div class="l">Monatliche Rate</div><input type="text" class="w101" value="389"> €</div>
+      <div class="vr"><div class="l">Effektiver Jahreszins</div><input type="text" class="w101" value="4,99"> %</div>
+    </div>
+  </div>
+
+  <!-- ===================== ÜBERSICHT ===================== -->
+  <div class="page" id="tab-ueber">
+    <div class="simple">
+      <h2>Übersicht</h2>
+      <div class="vr"><div class="l">Fahrzeug</div><b>Kia K4 GT-Line 1.6T DCT</b></div>
+      <div class="vr"><div class="l">Kennnummer</div>8003719</div>
+      <div class="vr"><div class="l">FIN</div>3KPFU51C6TE386214</div>
+      <div class="vr"><div class="l">Leistung</div>132 kW (179 PS)</div>
+      <div class="vr"><div class="l">Kraftstoff</div>Benzin, 6,9 l/100 km, 155 g CO2/km</div>
+    </div>
+  </div>
+
+  <!-- ===================== BÖRSEN ===================== -->
+  <div class="page" id="tab-boersen">
+    <div class="simple">
+      <h2>Börsen</h2>
+      <div class="vr"><div class="l">mobile.de</div><input type="checkbox" checked></div>
+      <div class="vr"><div class="l">AutoScout24</div><input type="checkbox" checked></div>
+      <div class="vr"><div class="l">Carzilla</div><input type="checkbox"></div>
+      <div class="vr"><div class="l">Kleinanzeigen</div><input type="checkbox"></div>
+      <div class="vr"><div class="l">Eigene Webseite</div><input type="checkbox" checked></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn" id="vinBtn" style="font-weight:normal">Q+ Assistent - VIN <b style="font-size:15px">✔</b></button>
+    <button class="btn" id="cancelBtn">Abbrechen</button>
+    <button class="btn" id="saveBtn">Speichern</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Hilfsfunktionen ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var toastTimer;
+  function toast(msg) {
+    var t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1600);
+  }
+  var MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+
+  /* ---------- Dropdowns mit Optionen füllen ---------- */
+  $$("select[data-opts]").forEach(function (sel) {
+    var spec = sel.getAttribute("data-opts"), opts;
+    if (spec === "months") opts = MONTHS;
+    else if (spec.indexOf("range:") === 0) {
+      var p = spec.slice(6).split("-"), a = +p[0], b = +p[1];
+      opts = [];
+      for (var i = a; i <= b; i++) opts.push(String(i));
+    } else opts = spec.split("|");
+    var empty = sel.getAttribute("data-empty");
+    if (empty) opts = [empty].concat(opts);
+    var val = sel.getAttribute("data-val");
+    opts.forEach(function (o) {
+      var op = document.createElement("option");
+      op.textContent = o;
+      if (o === val) op.selected = true;
+      sel.appendChild(op);
+    });
+  });
+
+  /* ---------- Tabs ---------- */
+  $$(".tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      $$(".tab").forEach(function (t) { t.classList.remove("active"); });
+      $$(".page").forEach(function (p) { p.classList.remove("active"); });
+      tab.classList.add("active");
+      $("#tab-" + tab.getAttribute("data-tab")).classList.add("active");
+    });
+  });
+
+  /* ---------- Aufklappbare Balken ---------- */
+  $$(".bar").forEach(function (bar) {
+    bar.addEventListener("click", function () {
+      var body = document.getElementById(bar.getAttribute("data-target"));
+      var open = body.classList.toggle("open");
+      bar.querySelector(".plus").textContent = open ? "−" : "+";
+    });
+  });
+
+  /* ---------- Modellzusatz / Kopfzeile ---------- */
+  var mz = $("#modellzusatz");
+  function updateHeadline() {
+    var full = "Kia K4 " + mz.value;
+    var n = mz.value.length + 7;
+    $("#hlCount").textContent = n;
+    $("#hlCount").classList.toggle("over", n > 65);
+    $("#titleText").textContent = full;
+    $("#pvMobile").textContent = full.slice(0, 48);
+    $("#pvAs24").textContent = full.slice(0, 56);
+    $("#pvCarzilla").textContent = full.slice(0, 65);
+  }
+  mz.addEventListener("input", updateHeadline);
+  updateHeadline();
+  $("#genBtn").addEventListener("click", function () {
+    mz.value = "GT-Line 1.6T DCT NAVI,KAMERA,ACC,LED,SITZHZG";
+    updateHeadline();
+    toast("Modellzusatz generiert");
+  });
+
+  /* ---------- Kalender ---------- */
+  $("#calBtn").addEventListener("click", function () {
+    var p = $("#ezPicker");
+    try { p.showPicker(); } catch (e) { p.focus(); }
+  });
+  $("#ezPicker").addEventListener("change", function () {
+    var v = this.value.split("-");
+    if (v.length === 3) $("#ez").value = v[2] + "." + v[1] + "." + v[0];
+  });
+
+  /* ---------- Footer / sonstige Buttons ---------- */
+  $("#saveBtn").addEventListener("click", function () { toast("Fahrzeug gespeichert"); });
+  $("#cancelBtn").addEventListener("click", function () { toast("Abgebrochen"); });
+  $("#vinBtn").addEventListener("click", function () { toast("VIN geprüft"); });
+  $("#qAssist").addEventListener("click", function () { toast("DAT-Datenabfrage gestartet"); });
+  $(".titlebar .close").addEventListener("click", function () { toast("Fenster schließen"); });
+
+  /* ---------- Ausstattungen ---------- */
+  // [Name, Breite, ausgewählt (Q+), börsenrelevant]
+  var GROUPS = [
+    ["Technik", [
+      ["Adaptives Dämpfungssystem","ew3",0,1],["Allrad","ew1",0,1],
+      ["Bidirektionales Laden","ew2",0,0],["Bordcomputer","ew1",1,0],
+      ["Digitales Kombiinstrument","ew3",1,0],
+      ["Keramikbremse","ew2",0,1],["Luftfederung","ew1",0,1],
+      ["Niveauregulierung","ew2",0,0],["Partikelfilter","ew1",1,1],
+      ["Range Extender","ew2",0,0],["Schaltwippen","ew1",1,0],
+      ["Sperrdifferential","ew2",0,0],["Sportabgasanlage","ew2b",0,1],
+      ["Start-Stop-Automatik","ew2",1,1],["Wärmepumpe","ew1",0,1]
+    ]],
+    ["Assistenzsysteme", [
+      ["Abstands-/Kollisionswarner","ew3",1,1],
+      ["Abstandsregeltempomat","ew2",1,1],["Anhängerrangierassistent","ew2b",0,0],
+      ["Ausparkassistent","ew2",1,0],["Bergabfahrassistent","ew2b",0,0],
+      ["Berganfahrassistent","ew2",1,0],["Fernlichtassistent","ew2b",1,1],
+      ["Lichtsensor","ew1",1,1],["Müdigkeitserkennung","ew2",1,1],
+      ["Nachtsichtassistent","ew2",0,1],["Notbremsassistent","ew2b",1,1],
+      ["Parklenkassistent","ew2",0,1],["Regensensor","ew2b",1,1],
+      ["Spurhalteassistent","ew2",1,1],["Spurwechselassistent","ew2b",1,0],
+      ["Totwinkelassistent","ew2",1,1],
+      ["Verkehrszeichenerkennung","ew3",1,1]
+    ]],
+    ["Komfort", [
+      ["Ambientebeleuchtung","ew2",1,1],["Elektr. Heckklappe","ew2b",0,1],
+      ["Head-up-Display","ew2",1,1],["Keyless Entry","ew2b",1,1],
+      ["Klimaautomatik","ew2",1,1],["Lenkradheizung","ew2b",1,1],
+      ["Massagesitze","ew2",0,1],["Schiebedach","ew2b",1,1],
+      ["Sitzbelüftung","ew2",1,1],["Sitzheizung","ew2b",1,1],
+      ["Standheizung","ew2",0,1],["Elektr. Sitzeinstellung","ew2b",1,1]
+    ]],
+    ["Multimedia", [
+      ["Android Auto","ew2",1,1],["Apple CarPlay","ew2b",1,1],
+      ["Bluetooth","ew1",1,1],["DAB-Radio","ew1",1,1],["Induktionsladen","ew1",1,1],
+      ["Navigationssystem","ew2",1,1],["Soundsystem","ew2b",1,1],
+      ["Sprachsteuerung","ew2",1,0],["Touchscreen","ew2b",1,0],
+      ["WLAN / WiFi Hotspot","ew2",0,0],["USB","ew1",1,0]
+    ]],
+    ["Licht & Sicht", [
+      ["LED-Scheinwerfer","ew2",1,1],["LED-Tagfahrlicht","ew2b",1,1],
+      ["Matrix-Scheinwerfer","ew2",0,1],["Kurvenlicht","ew2b",0,1],
+      ["Nebelscheinwerfer","ew2",0,0],["Kamera 360°","ew2b",1,1],
+      ["Rückfahrkamera","ew2",1,1],["Einparkhilfe vorne","ew2b",1,1],
+      ["Einparkhilfe hinten","ew2",1,1],["Getönte Scheiben","ew2b",1,0]
+    ]]
+  ];
+
+  var left = $("#equipLeft");
+  GROUPS.forEach(function (g) {
+    var fs = document.createElement("fieldset");
+    fs.className = "grp";
+    fs.innerHTML = "<legend>" + g[0] + "</legend>";
+    var wrap = document.createElement("div");
+    wrap.className = "eqwrap";
+    g[1].forEach(function (it) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "eq " + it[1] + (it[2] ? " sel qp" : "");
+      b.dataset.q = it[2] ? "1" : "0";
+      b.dataset.boerse = it[3] ? "1" : "0";
+      b.innerHTML = '<span class="q">Q+</span>' + it[0];
+      wrap.appendChild(b);
+    });
+    fs.appendChild(wrap);
+    left.appendChild(fs);
+  });
+
+  function updateCount() {
+    $("#selCount").textContent = $$(".eq.sel").length;
+    $("#totCount").textContent = $$(".eq").length;
+  }
+  left.addEventListener("click", function (e) {
+    var b = e.target.closest(".eq");
+    if (!b) return;
+    b.classList.toggle("sel");
+    updateCount();
+  });
+  $("#selAll").addEventListener("click", function () {
+    $$(".eq:not(.hidden)").forEach(function (b) { b.classList.add("sel"); });
+    updateCount();
+  });
+  $("#selNone").addEventListener("click", function () {
+    $$(".eq:not(.hidden)").forEach(function (b) { b.classList.remove("sel"); });
+    updateCount();
+  });
+  $("#qualityBtn").addEventListener("click", function () {
+    var on = this.classList.toggle("green");
+    $$(".eq").forEach(function (b) { b.classList.toggle("qp", on && b.dataset.q === "1"); });
+    if (on) $$('.eq[data-q="1"]').forEach(function (b) { b.classList.add("sel"); });
+    updateCount();
+  });
+  $("#boersenBtn").addEventListener("click", function () {
+    var on = this.classList.toggle("on");
+    $$('.eq[data-boerse="0"]').forEach(function (b) { b.classList.toggle("hidden", on); });
+  });
+  $("#cbBtn").addEventListener("click", function () {
+    var on = left.classList.toggle("cbmode");
+    this.classList.toggle("on", on);
+    this.textContent = on ? "Schaltflächen" : "Kontrollkästchen";
+  });
+  updateCount();
+
+  // DAT-Listen: [Name, Code, Preis, grün]
+  var SONDER = [
+    ["Sitzbelüftung vorn","SVAB02","328,00 €",1],
+    ["Ambiente-Beleuchtung einstellbar","TLSA01","",1],
+    ["Einparkhilfe seitlich","","",0],
+    ["Fahrassistenz-System: Auspark-Assistent","CRAAA1","",1],
+    ["Fahrassistenz-System: Totwinkel-Assistent mit Monitoranzeige (BVM)","","",1],
+    ["Head-up-Display (Frontsichtanzeige)","VDCF01","",1],
+    ["Kamerasystem 360°","","",1],
+    ["Schiebe-/Hebedach elektrisch (Glas)","","",1],
+    ["Sitz vorn links elektr. verstellbar (mit Memory)","","",1],
+    ["Sitzbezug / Polsterung: Kunstleder","SAAA11","",0],
+    ["Sitzheizung hinten","","",1],
+    ["Sound-System Harman-Kardon","VMBA09","",1],
+    ["Subwoofer","","",1]
+  ];
+  var SERIE = [
+    ["Airbag Beifahrerseite abschaltbar",1],["Airbag Fahrer-/Beifahrerseite",1],
+    ["Aktives Bremslicht (ESS)",0],["Anti-Blockier-System (ABS)",1],
+    ["Armaturenbrett Aluminium-Design",0],["Audio-Navigationssystem KIA (12,3\"-Display)",1],
+    ["Außenspiegel elektr. anklappbar",1],["Außenspiegel elektr. verstellbar, beide",1],
+    ["Außenspiegel schwarz lackiert",0],["Befestigungssystem mit Verzurrösen im Koffer-/Laderaum",0],
+    ["Blinkleuchten LED in Außenspiegel integriert",0],["BORDCOMPUTER",1],
+    ["Dachreling Vorbereitung",0],["Designelemente GT-line Hochglanz-Schwarz",0],
+    ["Digital Key 2.0",1],["Einparkhilfe vorn und hinten",1],
+    ["Einschaltautomatik für Fahrlicht",1],["Elektron. Stabilitäts-Programm (ESP / ESC)",1],
+    ["Energierückgewinnung (Alternator Management System, AMS)",0],
+    ["Fahrassistenz-System: aktiver Spurhalteassistent (LKAS, Lane Keep Assist System)",1],
+    ["Fahrassistenz-System: aktiver Totwinkel-Assistent (BCA-R)",1],
+    ["Fahrassistenz-System: Aufmerksamkeits-Assistent (In Cabin Camera, ICC)",1],
+    ["Fahrassistenz-System: Autobahnassistent (HDA 2)",1],
+    ["Fahrassistenz-System: Notbremsassistent (FCA)",1],
+    ["Fahrassistenz-System: Verkehrszeichenerkennung (ISLA)",1],
+    ["Fernlichtassistent (HBA)",1],["Geschwindigkeitsregelanlage adaptiv (SCC) mit Stop & Go",1],
+    ["Innenspiegel automatisch abblendend",0],["Isofix-Kindersitzbefestigung hinten",0],
+    ["Klimaautomatik 2-Zonen",1],["Lenkrad Leder (GT-line)",0],["Lenkradheizung",1],
+    ["Licht- und Regensensor",1],["Rückfahrkamera",1],["Schaltwippen am Lenkrad",1],
+    ["Scheinwerfer LED",1],["Sitzheizung vorn",1],["Smart-Key (schlüsselloses Zugangssystem)",1],
+    ["Start-Stop-Automatik",1],["Tagfahrlicht LED",1],["Wireless Charger (induktives Laden)",1]
+  ];
+  var ts = $("#datSonder");
+  SONDER.forEach(function (r) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td class="' + (r[3] ? "g" : "") + '">' + r[0] + '</td><td>' + r[1] + '</td><td class="r">' + r[2] + '</td>';
+    ts.appendChild(tr);
+  });
+  var sum = document.createElement("tr");
+  sum.className = "sum";
+  sum.innerHTML = "<td>Summe</td><td></td><td></td>";
+  ts.appendChild(sum);
+  var tse = $("#datSerie");
+  SERIE.forEach(function (r) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td class="' + (r[1] ? "g" : "") + '">' + r[0] + '</td><td class="r"></td>';
+    tse.appendChild(tr);
+  });
+  $(".dat").addEventListener("click", function (e) {
+    var tr = e.target.closest("tbody tr");
+    if (!tr || tr.classList.contains("sum")) return;
+    tr.firstChild.classList.toggle("g");
+  });
+
+  /* ---------- Verbrauch: Kosten berechnen ---------- */
+  var PREISE = { "Super E5": 1.744, "Super E10": 1.684, "Super Plus": 1.854, "Diesel": 1.634, "Strom": 0.36, "Autogas (LPG)": 0.99, "Erdgas (CNG)": 1.39, "Wasserstoff": 13.85 };
+  function num(v) { return parseFloat(String(v).replace(/\./g, "").replace(",", ".")) || 0; }
+  function fmt(v) { var r = Math.round(v * 100) / 100; return String(r).replace(".", ","); }
+  function co2Klasse(g) {
+    return g === 0 ? "A" : g <= 95 ? "B" : g <= 115 ? "C" : g <= 135 ? "D" : g <= 155 ? "E" : g <= 175 ? "F" : "G";
+  }
+  // Kfz-Steuer Benziner: 2 € je angefangene 100 ccm + progressiver CO2-Anteil über 95 g/km
+  function kfzSteuer(co2, ccm) {
+    var stufen = [[115, 2], [135, 2.2], [155, 2.5], [175, 2.9], [195, 3.4], [Infinity, 4]];
+    var t = Math.ceil(ccm / 100) * 2, unten = 95;
+    stufen.forEach(function (s) {
+      if (co2 > unten) t += (Math.min(co2, s[0]) - unten) * s[1];
+      unten = s[0];
+    });
+    return Math.floor(t);
+  }
+  $("#vEnergie").addEventListener("change", function () {
+    $("#vPreis").value = String(PREISE[this.value]).replace(".", ",");
+  });
+  $("#calcBtn").addEventListener("click", function () {
+    var btn = this;
+    var preis = PREISE[$("#vEnergie").value];
+    var komb = num($("#vKomb").value);
+    var co2 = num($("#vCo2").value);
+    var tonnen = co2 * 15000 * 10 / 1e6;
+    $("#vPreis").value = String(preis).replace(".", ",");
+    $("#vEK").value = fmt(komb * 150 * preis);
+    $("#vC1").value = fmt(tonnen * 142.5);
+    $("#vC2").value = fmt(tonnen * 60);
+    $("#vC3").value = fmt(tonnen * 220);
+    $("#vSteuer").value = kfzSteuer(co2, 1598);
+    $("#vCo2Klasse").value = co2Klasse(co2);
+    btn.classList.add("flash");
+    setTimeout(function () { btn.classList.remove("flash"); }, 300);
+    toast("Kosten & Steuer neu berechnet");
+  });
+})();
+</script>
+</body>
+</html>

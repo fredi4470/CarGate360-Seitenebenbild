@@ -282,6 +282,93 @@
   .costs .c2 .l { width: 367px; }
   .cr input { width: 70px; }
 
+
+  /* ---------- Preise & Beschreibung ---------- */
+  .preise { padding: 10px 15px 10px 15px; font-size: 12.5px; }
+  .preise h2.ph { font-size: 17px; font-weight: bold; margin: 0 0 22px; color: #333; }
+  .preise .row { height: 25.6px; }
+  .preise .pf { margin-left: 160px; font-weight: bold; }
+  .preise .pf .req { font-weight: normal; }
+  select.dim { color: #777; background: #f1f1f1; }
+  .beschr-head { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 22px; }
+  .beschr-head h2.ph { margin-top: 12px; }
+  .portals { display: flex; gap: 24px; margin-right: -9px; }
+  .portal { width: 98px; text-align: left; font-size: 12px; line-height: 16px; }
+  .plogo { display: flex; align-items: center; justify-content: space-between; height: 26px; margin-bottom: 6px; }
+  .lg-mobile { font: bold 13px Arial; color: #222; letter-spacing: -.3px; border-left: 6px solid #e2662b; padding-left: 2px; }
+  .lg-as24 { font: 12px Arial; color: #333; }
+  .lg-as24 span { background: #f5f200; padding: 0 1px; }
+  .lg-carzilla { font: 14px Arial; color: #333; letter-spacing: -.3px; }
+  .lg-carzilla b { color: #d42027; font-weight: normal; }
+  .pchk {
+    width: 22px; height: 22px; border-radius: 50%; background: #c7c7c7; color: #fff;
+    font-size: 13px; line-height: 22px; text-align: center; cursor: pointer; user-select: none; flex: none;
+  }
+  .pchk.on { background: #2bab3b; }
+  .brow { display: flex; align-items: center; margin-top: 8px; }
+  .brow .btn { height: 30px; font-size: 13px; }
+  .brow .info { margin-left: 6px; }
+  .seg { display: inline-flex; gap: 2px; }
+  .segb.sel { background: linear-gradient(#2c9a2c, #127212); color: #fff; border-color: #0e5e0e; font-weight: bold; }
+  .flabel { margin-top: 6px; font-size: 12.5px; }
+  .klickfelder {
+    border: 1px solid #555; background: #ebebeb; padding: 2px 3px;
+    font-size: 12px; line-height: 15px; min-height: 40px; color: #222;
+  }
+  textarea.ta {
+    display: block; width: 100%; resize: vertical; border: 1px solid #555; padding: 2px 3px;
+    font-family: inherit; font-size: 12px; line-height: 15px; color: #222; background: #fff;
+  }
+  .ftrow { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
+  .ftrow .btn { height: 30px; margin-bottom: 4px; }
+  .zeichen { text-align: right; margin: 14px 0 12px; }
+  .zeichen.over { color: #c00; font-weight: bold; }
+  .panel { border: 1px solid #d0d0d0; border-radius: 4px; margin-bottom: 6px; background: #f4f4f4; padding: 4px; }
+  .pbar {
+    height: 22px; line-height: 22px; border-radius: 3px; background: linear-gradient(#5b5b5b, #2e2e2e);
+    color: #fff; font-weight: bold; text-align: right; padding: 0 8px; cursor: pointer; user-select: none; font-size: 13px;
+  }
+  .pbody { padding: 10px 6px 4px; font-size: 12px; }
+  .panel.closed .pbody { display: none; }
+  .hswrap { display: flex; flex-wrap: wrap; gap: 2px; }
+  .hs {
+    min-width: 59px; height: 29px; padding: 0 8px;
+    border: 1px solid #d0d0d0; border-radius: 3px; background: #fff; cursor: pointer;
+    font-family: inherit; font-size: 13px; color: #222;
+  }
+  .hs.sel { background: linear-gradient(#2a9b2a, #137713); border-color: #0f650f; color: #fff; font-weight: bold; }
+
+  /* ---------- Änderungen markieren ---------- */
+  @keyframes pendingGlow {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(255, 204, 0, .95), 0 0 6px 2px rgba(255, 214, 0, .55); }
+    50%      { box-shadow: 0 0 0 2px rgba(255, 204, 0, .45), 0 0 0 0 rgba(255, 214, 0, 0); }
+  }
+  @keyframes savedFlash {
+    0%   { box-shadow: 0 0 0 3px #ffd800, 0 0 18px 6px rgba(255, 216, 0, .95); }
+    100% { box-shadow: 0 0 0 2px #f0c400, 0 0 0 0 rgba(255, 216, 0, 0); }
+  }
+  input[type=text].chg-saved, select.chg-saved, textarea.chg-saved,
+  input[type=text].chg-pending, select.chg-pending, textarea.chg-pending { background-color: #fff3a3; border-color: #d9a800; }
+  .chg-saved { box-shadow: 0 0 0 2px #f0c400; }
+  .chg-pending { animation: pendingGlow 1.1s ease-in-out infinite; }
+  .chg-flash { animation: savedFlash 1.5s ease-out 1; }
+  input[type=checkbox].chg-saved, input[type=checkbox].chg-pending { outline: 2px solid #f0c400; outline-offset: 1px; }
+  .eq.chg-saved:not(.sel), .eq.chg-pending:not(.sel), .hs.chg-saved:not(.sel), .hs.chg-pending:not(.sel),
+  .segb.chg-saved:not(.sel), .segb.chg-pending:not(.sel) { background: #fff3a3; border-color: #d9a800; }
+  .eq.sel.chg-saved, .eq.sel.chg-pending, .hs.sel.chg-saved, .hs.sel.chg-pending,
+  .segb.sel.chg-saved, .segb.sel.chg-pending { border-color: #ffd800; }
+  .dat td.chg-saved, .dat td.chg-pending { background: #fff3a3 !important; box-shadow: none; }
+  .dat td.chg-pending { animation: none; outline: 2px solid #f0c400; outline-offset: -2px; }
+  .tab.tab-pending::after, .tab.tab-changed::after {
+    content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #f5c800; margin-left: 4px; vertical-align: 1px;
+  }
+  .tab.tab-pending::after { box-shadow: 0 0 5px 2px #ffd800; }
+  .footer .status { margin-right: auto; align-self: center; font-size: 12px; color: #555; }
+  .footer .status .warn { color: #8a6500; font-weight: bold; }
+  .footer .status a { margin-left: 14px; color: #555; font-size: 11px; }
+  #saveBtn.save-ready { background: linear-gradient(#fff6b8, #ffe14d); border-color: #c9a000; font-weight: bold; }
+
   /* ---------- Platzhalter-Tabs ---------- */
   .simple { padding: 14px 15px; }
   .simple h2 { font-size: 15px; font-weight: normal; margin: 4px 0 14px; }
@@ -306,6 +393,7 @@
     <button class="tab" data-tab="ausst">Ausstattungen</button>
     <button class="tab" data-tab="zusatz">Zusatzinfos</button>
     <button class="tab" data-tab="verbrauch">Verbrauch</button>
+    <button class="tab" data-tab="laden">Laden &amp; Strom</button>
     <button class="tab" data-tab="fin">Finanzierung</button>
     <button class="tab" data-tab="ueber">Übersicht</button>
     <button class="tab" data-tab="boersen">Börsen</button>
@@ -369,7 +457,7 @@
         <div class="col" style="margin-left:0">
           <div class="row"><div class="l">HSN/TSN/Baureihe <span class="req">+</span></div><div class="f"><input type="text" class="w52" value="2513"><input type="text" class="w46" value="AAC"><input type="text" class="w125" value="K4"></div></div>
           <div class="row"><div class="l">dat-ECode <span class="req">+</span></div><div class="f"><input type="text" class="w202" value="014251401440001"><span class="info" title="DAT-Europa-Code">i</span></div></div>
-          <div class="row"><div class="l">Erstzulassung</div><div class="f"><input type="text" class="w101" id="ez"><span class="cal" id="calBtn" title="Datum wählen">31<input type="date" id="ezPicker" tabindex="-1"></span></div></div>
+          <div class="row"><div class="l">Erstzulassung</div><div class="f"><input type="text" class="w101" id="ez"><span class="cal" data-for="ez" title="Datum wählen">31<input type="date" data-notrack tabindex="-1"></span></div></div>
           <div class="row"><div class="l">km-Stand</div><div class="f"><input type="text" class="w101" value="5"></div></div>
           <div class="row"><div class="l">Nächste HU (Monat/Jahr)</div><div class="f"><select class="w101" data-opts="months" data-empty="Bitte wählen"></select><select class="w101" data-opts="range:2026-2030" data-empty="Bitte wählen"></select></div></div>
           <div class="row"><div class="l">Bau-Monat/Jahr</div><div class="f"><select class="w101" data-opts="months" data-empty="Bitte wählen" data-val="Juli"></select><select class="w101" data-opts="range:2015-2027" data-empty="Bitte wählen" data-val="2026"></select></div></div>
@@ -401,16 +489,83 @@
     </div>
   </div>
 
-  <!-- ===================== PREISE ===================== -->
+  <!-- ===================== PREISE & BESCHREIBUNG ===================== -->
   <div class="page" id="tab-preise">
+    <div class="preise">
+      <h2 class="ph">Preisdaten</h2>
+      <div class="cols">
+        <div class="col">
+          <div class="row"><div class="l">Verkaufspreis (brutto) <span class="req">*</span></div><div class="f"><input type="text" class="w101" value="28.980"> €</div></div>
+          <div class="row"><div class="l">Einkaufspreis</div><div class="f"><input type="text" class="w101" value="23.500"> €</div></div>
+          <div class="row"><div class="l">Wiederverkäuferpreis</div><div class="f"><input type="text" class="w101" value="28.980"> €<span class="info" title="Preis für Händler (B2B)">i</span></div></div>
+          <div class="row"><div class="l">Neupreis (UPE)</div><div class="f"><input type="text" class="w101" value=""> €<span class="info" title="Unverbindliche Preisempfehlung des Herstellers">i</span></div></div>
+          <div class="row"><div class="l">Hauspreis</div><div class="f"><input type="text" class="w101" value="29.380"> €</div></div>
+          <div class="row"><div class="l">Kampagnenpreis</div><div class="f"><input type="text" class="w101" value=""> €</div></div>
+        </div>
+        <div class="col">
+          <div class="row"><div class="l">Lieferdatum</div><div class="f"><input type="text" class="w101" id="lieferdatum" value="03.10.2026"><span class="cal" data-for="lieferdatum" title="Datum wählen">31<input type="date" data-notrack tabindex="-1"></span><span class="info" style="margin-left:0" title="Voraussichtliches Lieferdatum">i</span></div></div>
+          <div class="row"><div class="l">Lieferfrist (Tage)</div><div class="f"><select class="w101 dim" data-opts="Sofort lieferbar|1|2|3|5|7|14|21|28|42|56|90" data-val="Sofort lieferbar"></select></div></div>
+          <div class="row"><div class="l">Ankaufdatum <span class="req">*</span></div><div class="f"><input type="text" class="w101" id="ankaufdatum" value="04.10.2026"><span class="cal" data-for="ankaufdatum" title="Datum wählen">31<input type="date" data-notrack tabindex="-1"></span></div></div>
+          <div class="row"><div class="l">Standkosten</div><div class="f"><input type="text" class="w101" value="1"> €</div></div>
+          <div class="row"><div class="l">Sonderangebot</div><div class="f"><input type="checkbox" checked><span class="info" style="margin-left:-2px" title="Als Sonderangebot an die Börsen übertragen">i</span></div></div>
+          <div class="row"><div class="l">MwSt. Ausweisbar</div><div class="f"><input type="checkbox"><span class="pf"><span class="req">*</span> Pflichtfelder</span></div></div>
+        </div>
+      </div>
+
+      <div class="beschr-head">
+        <h2 class="ph">Beschreibung</h2>
+        <div class="portals">
+          <div class="portal"><div class="plogo"><span class="lg-mobile">mobile.de</span><span class="pchk tg on" data-key="portal:mobile" title="Übertragung an/aus">✔</span></div>max. 5000Z.</div>
+          <div class="portal"><div class="plogo"><span class="lg-as24"><span>Auto</span>Scout24</span><span class="pchk tg on" data-key="portal:as24" title="Übertragung an/aus">✔</span></div>max. 5000Z.</div>
+          <div class="portal"><div class="plogo"><span class="lg-carzilla">car<b>zil</b>la.de</span><span class="pchk tg on" data-key="portal:carzilla" title="Übertragung an/aus">✔</span></div>max. 5000Z.</div>
+        </div>
+      </div>
+
+      <div class="brow">
+        <span class="seg"><button class="btn segb tg sel" data-key="mode:standard" data-group="mode">Standard</button><button class="btn segb tg" data-key="mode:frei" data-group="mode">Freie Gestaltung</button></span><span class="info" title="Standard: Text wird aus Bausteinen erzeugt. Freie Gestaltung: eigener Text.">i</span>
+      </div>
+      <div class="brow">
+        <button class="btn" id="vorschauBtn">Vorschau</button><span class="info" title="Vorschau der Börsenbeschreibung">i</span>
+        <button class="btn" id="datPaketBtn" style="margin-left:10px">Ausstattungspakete laut DAT</button><span class="info" title="Pakete aus den DAT-Daten übernehmen">i</span>
+      </div>
+
+      <div class="flabel">Ausstattungsklickfelder:<span class="info" title="Wird automatisch aus dem Tab „Ausstattungen“ erzeugt">i</span></div>
+      <div class="klickfelder" id="klickfelder"></div>
+
+      <div class="flabel" style="margin-top:12px">Fahrzeugbeschreibung:<span class="info" title="Beschreibungstext für die Börsen">i</span></div>
+      <textarea class="ta" id="fzBeschr" style="height:248px">BORDCOMPUTER, Sitz vorn rechts elektr. verstellbar, Reifendruck-Kontrollsystem, Antriebsart: Allradantrieb, Mittelarmlehne vorn, Rückfahrkamera, Scheibenwischer mit Regensensor, Reifen-Reparaturkit, Verglasung getönt, Dachreling, Heckleuchten LED, Außenspiegel elektr. verstell- und heizbar, beide, Ambiente-Beleuchtung, Audiosystem: Radio RDS, Einparkhilfe hinten, Sonnenschutzrollo an Türscheiben hinten, LM-Felgen, Geschwindigkeits-Regelanlage (Tempomat) mit Abstandsregelung ACC, Komfortsitze vorn (inkl. Belüftung / Sitzheizung), Geschwindigkeits-Begrenzeranlage (Speed-Limiter), Scheinwerfer Voll-LED, Schadstoffarm nach Abgasnorm Euro 6d, Touchscreen-Farbdisplay (10,25 Zoll), Seitenairbag vorn mitte (Central Airbag), Fahrassistenz-System: Insassenalarm (Rear Occopant Alert, ROA), 8 Lautsprecher, Dachspoiler, Lenkrad (Leder), Sitzbezug / Polsterung: Leder, Sound-System KRELL, Mica-Lackierung / Mineraleffekt-Lackierung, Panorama-Schiebedach, Anti-Blockier-System (ABS), Lenkrad mit Schaltwippen, Tagfahrlicht LED, Lenksäule (Lenkrad) höhenverstellbar, Seitenairbag vorn, Servolenkung, Start-Stopp-Knopf, Wegfahrsperre (elektronisch), Kopf-Airbag-System, Gepäckraumabdeckung / Rollo, Rücksitzlehne geteilt/klappbar, Airbag Beifahrerseite, Airbag Fahrerseite, USB-Anschluss Mittelkonsole, Fensterheber elektrisch vorn und hinten, mit Auf-/Ab-Automatik, USB-Anschluss hinten, Wireless SmartLink (Apple CarPlay), Navigationsbasierte Adaptive Geschwindigkeitsregelanlage (Tempomat) mit Abstandsregelung (NSCC), Rücksitzlehne umklappbar mit Fernentriegelung im Kofferraum, Digital Cockpit (Instrumentenanzeige Digital), 12V-Steckdose im Laderaum, Abbiegelicht, aktiver Spurhalteassistent (LKAS, Lane Keep Assist System), aktiver Totwinkel-Assistent, Aktives Bremslicht (ESS), Anhänger-Stabilisierungs-Programm (TSA), Assistenz-Paket, Audio-Navigationssystem, Aufmerksamkeits-Assistent, Außenspiegel elektr. anklappbar, Außenspiegel lackiert, Ausstiegswarnung, Autobahnassistent (Highway Driving Assist, HDA), Automatik - (6-Stufen), Autonome Notbremsfunktion inkl. Abbiegefunktion (FCA-JT), Autonome Notbremsfunktion inkl. Fahrradfahrererkennung (FCA-Cyc.), Autonome Notbremsfunktion inkl. Frontkollisionswarnung (FCA)</textarea>
+
+      <div class="ftrow">
+        <div class="flabel">Freitext/Kampagnentext:<span class="info" title="Wird an jede Beschreibung angehängt">i</span></div>
+        <button class="btn" id="clearBeschr">Fahrzeugbeschreibung leeren</button>
+      </div>
+      <textarea class="ta" id="freitext" style="height:82px">Herzlich Willkommen bei der Dresen Gruppe, einem der größten Mehrmarken-Automobilhändler im Rheinland. Wir blicken auf eine über 150 jährige automobile Tradition zurück und präsentieren uns somit als seriöser und kompetenter Ansprechpartner in allen Fragen rund um das Thema Mobilität. Unsere Gebrauchtfahrzeuge haben alle mindestens 18 Monate HU und AU. Vor der Auslieferung wird eine Übergabeinspektion in unserer Vertragswerkstatt durchgeführt. Gerne beraten wir Sie über attraktive Finanzierungsmöglichkeiten auch ohne Anzahlung. Inzahlungnahme Ihres Gebrauchtfahrzeuges ausdrücklich erwünscht! Wir freuen uns auf Ihren Besuch! Ihr Dresen Team</textarea>
+      <div class="zeichen">Zeichen gesamt <span id="zeichenCount">0</span>/5000<span class="info" title="Summe aus Ausstattungsklickfeldern, Fahrzeugbeschreibung und Freitext">i</span></div>
+
+      <div class="panel">
+        <div class="pbar">Eigene Textblöcke hinzufügen <span class="pm">–</span></div>
+        <div class="pbody">Sie haben noch keine eigenen Textblöcke hinterlegen lassen. Wenden Sie sich dafür gern an unseren Support.</div>
+      </div>
+      <div class="panel">
+        <div class="pbar">Ausstattungsmerkmale hinzufügen oder entfernen <span class="pm">–</span></div>
+        <div class="pbody">
+          <div style="margin-bottom:4px">Gewählte Hersteller für Ausstattungsmerkmalvorlagen:</div>
+          <div class="hswrap" id="hsWrap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== LADEN & STROM ===================== -->
+  <div class="page" id="tab-laden">
     <div class="simple">
-      <h2>Preise &amp; Beschreibung</h2>
-      <div class="vr"><div class="l">Verkaufspreis (brutto) <span class="req">*</span></div><input type="text" class="w101" value="32.990"> €</div>
-      <div class="vr"><div class="l">Händlerpreis (netto)</div><input type="text" class="w101" value="26.890"> €</div>
-      <div class="vr"><div class="l">MwSt. ausweisbar</div><input type="checkbox" checked></div>
-      <div class="vr"><div class="l">Preis verhandelbar</div><input type="checkbox"></div>
-      <div class="vr" style="margin-bottom:8px"><div class="l">Beschreibung</div></div>
-      <textarea>Kia K4 GT-Line 1.6T DCT – Navigationssystem, 360°-Kamera, Abstandsregeltempomat, LED-Scheinwerfer, Sitzheizung vorn und hinten, Head-up-Display, Harman-Kardon-Soundsystem.</textarea>
+      <h2>Laden &amp; Strom</h2>
+      <div class="vr"><div class="l">Batteriekapazität</div><input type="text" class="w101" value=""> kWh</div>
+      <div class="vr"><div class="l">Elektrische Reichweite</div><input type="text" class="w101" value=""> km</div>
+      <div class="vr"><div class="l">Ladeleistung AC</div><input type="text" class="w101" value=""> kW</div>
+      <div class="vr"><div class="l">Ladeleistung DC</div><input type="text" class="w101" value=""> kW</div>
+      <div class="vr"><div class="l">Steckertyp</div><select class="w152" data-empty="Bitte wählen" data-opts="Typ 2|CCS|CHAdeMO|Schuko"></select></div>
+      <div class="vr"><div class="l">Stromverbrauch kombiniert</div><input type="text" class="w101" value=""> kWh/100 km</div>
     </div>
   </div>
 
@@ -532,6 +687,7 @@
   </div>
 
   <div class="footer">
+    <div class="status"><span id="statusText">Keine ungespeicherten Änderungen</span><a href="#" id="resetLink">Alle Änderungen zurücksetzen</a></div>
     <button class="btn" id="vinBtn" style="font-weight:normal">Q+ Assistent - VIN <b style="font-size:15px">✔</b></button>
     <button class="btn" id="cancelBtn">Abbrechen</button>
     <button class="btn" id="saveBtn">Speichern</button>
@@ -617,18 +773,20 @@
   });
 
   /* ---------- Kalender ---------- */
-  $("#calBtn").addEventListener("click", function () {
-    var p = $("#ezPicker");
-    try { p.showPicker(); } catch (e) { p.focus(); }
-  });
-  $("#ezPicker").addEventListener("change", function () {
-    var v = this.value.split("-");
-    if (v.length === 3) $("#ez").value = v[2] + "." + v[1] + "." + v[0];
+  $$(".cal[data-for]").forEach(function (cal) {
+    var picker = cal.querySelector("input"), target = document.getElementById(cal.getAttribute("data-for"));
+    cal.addEventListener("click", function () {
+      try { picker.showPicker(); } catch (e) { picker.focus(); }
+    });
+    picker.addEventListener("change", function () {
+      var v = this.value.split("-");
+      if (v.length !== 3) return;
+      target.value = v[2] + "." + v[1] + "." + v[0];
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+    });
   });
 
   /* ---------- Footer / sonstige Buttons ---------- */
-  $("#saveBtn").addEventListener("click", function () { toast("Fahrzeug gespeichert"); });
-  $("#cancelBtn").addEventListener("click", function () { toast("Abgebrochen"); });
   $("#vinBtn").addEventListener("click", function () { toast("VIN geprüft"); });
   $("#qAssist").addEventListener("click", function () { toast("DAT-Datenabfrage gestartet"); });
   $(".titlebar .close").addEventListener("click", function () { toast("Fenster schließen"); });
@@ -692,7 +850,8 @@
     g[1].forEach(function (it) {
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "eq " + it[1] + (it[2] ? " sel qp" : "");
+      b.className = "eq tg " + it[1] + (it[2] ? " sel qp" : "");
+      b.dataset.key = "eq:" + it[0];
       b.dataset.q = it[2] ? "1" : "0";
       b.dataset.boerse = it[3] ? "1" : "0";
       b.innerHTML = '<span class="q">Q+</span>' + it[0];
@@ -710,7 +869,6 @@
     var b = e.target.closest(".eq");
     if (!b) return;
     b.classList.toggle("sel");
-    updateCount();
   });
   $("#selAll").addEventListener("click", function () {
     $$(".eq:not(.hidden)").forEach(function (b) { b.classList.add("sel"); });
@@ -778,9 +936,12 @@
     ["Start-Stop-Automatik",1],["Tagfahrlicht LED",1],["Wireless Charger (induktives Laden)",1]
   ];
   var ts = $("#datSonder");
-  SONDER.forEach(function (r) {
+  SONDER.forEach(function (r, i) {
     var tr = document.createElement("tr");
     tr.innerHTML = '<td class="' + (r[3] ? "g" : "") + '">' + r[0] + '</td><td>' + r[1] + '</td><td class="r">' + r[2] + '</td>';
+    tr.firstChild.className += " tg";
+    tr.firstChild.dataset.key = "dat:s" + i;
+    tr.firstChild.dataset.tgcls = "g";
     ts.appendChild(tr);
   });
   var sum = document.createElement("tr");
@@ -788,9 +949,12 @@
   sum.innerHTML = "<td>Summe</td><td></td><td></td>";
   ts.appendChild(sum);
   var tse = $("#datSerie");
-  SERIE.forEach(function (r) {
+  SERIE.forEach(function (r, i) {
     var tr = document.createElement("tr");
     tr.innerHTML = '<td class="' + (r[1] ? "g" : "") + '">' + r[0] + '</td><td class="r"></td>';
+    tr.firstChild.className += " tg";
+    tr.firstChild.dataset.key = "dat:e" + i;
+    tr.firstChild.dataset.tgcls = "g";
     tse.appendChild(tr);
   });
   $(".dat").addEventListener("click", function (e) {
@@ -836,6 +1000,158 @@
     setTimeout(function () { btn.classList.remove("flash"); }, 300);
     toast("Kosten & Steuer neu berechnet");
   });
+  /* ---------- Preise & Beschreibung ---------- */
+  var HERSTELLER = ["Allgemein","Audi","BMW","Fiat","Ford","Hyundai","Jaguar","Jeep","Kia","Land Rover","Mazda","Opel",
+    "Mercedes-Benz","Mini","Nissan","Peugeot","Renault","Seat","Skoda","Toyota","Volkswagen","Volvo"];
+  var HS_AKTIV = ["Allgemein","Hyundai","Kia"];
+  HERSTELLER.forEach(function (h) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "hs tg" + (HS_AKTIV.indexOf(h) >= 0 ? " sel" : "");
+    b.dataset.key = "hs:" + h;
+    b.textContent = h;
+    $("#hsWrap").appendChild(b);
+  });
+  $("#hsWrap").addEventListener("click", function (e) {
+    var b = e.target.closest(".hs");
+    if (b) b.classList.toggle("sel");
+  });
+  $$(".segb").forEach(function (b) {
+    b.addEventListener("click", function () {
+      $$('.segb[data-group="' + b.dataset.group + '"]').forEach(function (o) { o.classList.toggle("sel", o === b); });
+    });
+  });
+  $$(".pchk").forEach(function (c) {
+    c.addEventListener("click", function () { c.classList.toggle("on"); });
+  });
+  $$(".pbar").forEach(function (bar) {
+    bar.addEventListener("click", function () {
+      var closed = bar.parentNode.classList.toggle("closed");
+      bar.querySelector(".pm").textContent = closed ? "+" : "–";
+    });
+  });
+  $("#clearBeschr").addEventListener("click", function () {
+    $("#fzBeschr").value = "";
+    toast("Fahrzeugbeschreibung geleert");
+  });
+  $("#vorschauBtn").addEventListener("click", function () {
+    var w = window.open("", "_blank", "width=720,height=640");
+    if (!w) { toast("Popup wurde blockiert"); return; }
+    var esc = function (t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); };
+    w.document.write("<title>Vorschau</title><body style='font:13px Verdana;padding:16px'><h3>" + esc($("#titleText").textContent) +
+      "</h3><p>" + esc($("#klickfelder").textContent) + "</p><p>" + esc($("#fzBeschr").value) + "</p><p>" + esc($("#freitext").value) + "</p></body>");
+  });
+  $("#datPaketBtn").addEventListener("click", function () {
+    var ta = $("#fzBeschr");
+    var pakete = "Assistenz-Paket, Komfort-Paket, Sound-Paket Harman-Kardon";
+    if (ta.value.indexOf(pakete) < 0) ta.value = (ta.value ? ta.value + ", " : "") + pakete;
+    toast("Ausstattungspakete laut DAT übernommen");
+  });
+
+  // Abgeleitete Anzeigen (Zähler, Klickfelder, Zeichenanzahl)
+  function updateDerived() {
+    updateHeadline();
+    updateCount();
+    var namen = $$(".eq.sel").map(function (b) { return b.lastChild.textContent; }).sort(function (a, b) { return a.localeCompare(b, "de"); });
+    $("#klickfelder").textContent = namen.join(", ");
+    var n = $("#klickfelder").textContent.length + $("#fzBeschr").value.length + $("#freitext").value.length;
+    $("#zeichenCount").textContent = n;
+    $("#zeichenCount").parentNode.classList.toggle("over", n > 5000);
+  }
+
+  /* ---------- Speichern & Änderungen markieren ---------- */
+  var STORE = "cargate360-fahrzeug-v1";
+  var items = [];
+  var fieldIdx = 0;
+  $$(".dialog input, .dialog select, .dialog textarea").forEach(function (el) {
+    if (el.hasAttribute("data-notrack")) return;
+    var key = el.id ? "id:" + el.id : "f" + (fieldIdx++);
+    var chk = el.type === "checkbox";
+    items.push({
+      key: key, el: el,
+      get: function () { return chk ? el.checked : el.value; },
+      set: function (v) { if (chk) el.checked = v; else el.value = v; }
+    });
+  });
+  $$(".dialog .tg[data-key]").forEach(function (el) {
+    var cls = el.dataset.tgcls || (el.classList.contains("pchk") ? "on" : "sel");
+    items.push({
+      key: el.dataset.key, el: el,
+      get: function () { return el.classList.contains(cls); },
+      set: function (v) { el.classList.toggle(cls, !!v); }
+    });
+  });
+
+  function snapshot() {
+    var o = {};
+    items.forEach(function (it) { o[it.key] = it.get(); });
+    return o;
+  }
+  function apply(state) {
+    items.forEach(function (it) { if (it.key in state) it.set(state[it.key]); });
+    updateDerived();
+  }
+  var original = snapshot();
+  var saved = original;
+  try {
+    var raw = localStorage.getItem(STORE);
+    if (raw) { saved = Object.assign({}, original, JSON.parse(raw)); apply(saved); }
+  } catch (e) { /* Speicher nicht verfügbar */ }
+
+  function refresh() {
+    updateDerived();
+    var pending = 0;
+    items.forEach(function (it) {
+      var v = it.get();
+      var isPending = v !== saved[it.key];
+      var isChanged = v !== original[it.key];
+      it.el.classList.toggle("chg-pending", isPending);
+      it.el.classList.toggle("chg-saved", !isPending && isChanged);
+      if (isPending) pending++;
+    });
+    $$(".tab").forEach(function (t) {
+      var page = $("#tab-" + t.getAttribute("data-tab"));
+      t.classList.toggle("tab-pending", !!page.querySelector(".chg-pending"));
+      t.classList.toggle("tab-changed", !page.querySelector(".chg-pending") && !!page.querySelector(".chg-saved"));
+    });
+    var st = $("#statusText");
+    st.textContent = pending ? pending + (pending === 1 ? " ungespeicherte Änderung" : " ungespeicherte Änderungen") : "Keine ungespeicherten Änderungen";
+    st.classList.toggle("warn", pending > 0);
+    $("#saveBtn").classList.toggle("save-ready", pending > 0);
+    return pending;
+  }
+  ["input", "change", "click"].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(refresh, 0); });
+  });
+
+  $("#saveBtn").addEventListener("click", function () {
+    var pendingEls = $$(".chg-pending");
+    saved = snapshot();
+    try { localStorage.setItem(STORE, JSON.stringify(saved)); }
+    catch (e) { toast("Speichern im Browser nicht möglich"); return; }
+    setTimeout(function () {
+      pendingEls.forEach(function (el) {
+        el.classList.remove("chg-flash");
+        void el.offsetWidth;
+        el.classList.add("chg-flash");
+        setTimeout(function () { el.classList.remove("chg-flash"); }, 1600);
+      });
+    }, 0);
+    toast(pendingEls.length ? "Gespeichert – " + pendingEls.length + (pendingEls.length === 1 ? " Änderung" : " Änderungen") : "Keine neuen Änderungen");
+  });
+  $("#cancelBtn").addEventListener("click", function () {
+    apply(saved);
+    toast("Ungespeicherte Änderungen verworfen");
+  });
+  $("#resetLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (!confirm("Alle gespeicherten Änderungen verwerfen und den Ursprungszustand wiederherstellen?")) return;
+    try { localStorage.removeItem(STORE); } catch (err) { /* ignorieren */ }
+    saved = original;
+    apply(original);
+    toast("Ursprungszustand wiederhergestellt");
+  });
+  refresh();
 })();
 </script>
 </body>
